@@ -15,7 +15,7 @@ The [relying_party.rb](relying_party.rb) backend requires the Ruby programming l
 
 ```bash
 gem install sinatra
-gem install sinatra/contrib
+gem install sinatra-contrib
 gem install webauthn
 gem install sqlite3
 ```
