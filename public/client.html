@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Passkey demo</h1>
+    <button onclick="registration()">Add a new passkey</button>
+    <button onclick="authentication()">Sign in with passkey</button>
+    <script>
+      async function registration() {
+        // Request options from relying party
+        const response = await fetch("/registration/options?name=Example");
+        const json = await response.json();
+        console.log(json);
+
+        // Create credentials from authenticator
+        const options = PublicKeyCredential.parseCreationOptionsFromJSON(json);
+        const credential = await navigator.credentials.create({ publicKey: options });
+        console.log(credential);
+
+        // Send public key to relying party
+        const result = JSON.stringify(credential.toJSON());
+        const response2 = await fetch("/registration/result?name=Example", { method: "POST", body: result });
+        const json2 = await response2.json();
+        console.log(json2);
+      }
+
+      async function authentication() {
+        // Request challenge from relying party
+        const response = await fetch("/authentication/options");
+        const json = await response.json();
+        console.log(json);
+
+        // Get credentials from authenticator
+        const options = PublicKeyCredential.parseRequestOptionsFromJSON(json);
+        const credential = await navigator.credentials.get({ publicKey: options });
+        console.log(credential);
+
+        // Send credentials to relying party for verification
+        const result = JSON.stringify(credential.toJSON());
+        const response2 = await fetch("/authentication/result", { method: "POST", body: result });
+        const json2 = await response2.json();
+        console.log(json2);
+      }
+    </script>
+  </body>
+</html>
